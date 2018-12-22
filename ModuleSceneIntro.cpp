@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "PhysVehicle3D.h"
 #include "ModulePlayer.h"
+#include "Color.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -23,11 +24,11 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	player1->Start(0, 0, 100, 3.14);
+	player1->Start(0, 0, 100, 3.14, PLAYER1);
 
-	player2->Start(0, 0, -100, 0);
+	player2->Start(0, 0, -100, 0, PLAYER2);
 
-
+	createMap();
 
 	ball.radius = 2;
 	ball.color = Blue;
@@ -84,10 +85,46 @@ bool ModuleSceneIntro::Draw() {
 	ret = player1->Draw();
 	ret = player2->Draw();
 	ball.Render();
+
+	p2List_item<Primitive*>* item = map.getFirst();
+	for (int i = 0; i < map.count() && item != nullptr; item = item->next) {
+		item->data->Render();
+	}
+
 	return ret;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
+
+}
+
+void ModuleSceneIntro::createMap()
+{
+	//BLUE FIELD
+
+	//Left
+	Cube* p = new Cube(30,15,0.1);
+	p->color = Green;
+	p->SetPos(-30, 7.5f, 100);
+	map.add(p);
+	//Right
+	p = new Cube(30, 15, 0.1);
+	p->color = Green;
+	p->SetPos(30, 7.5f, 100);
+	map.add(p);
+	//Center
+	p = new Cube(30, 6, 0.1);
+	p->color = Green;
+	p->SetPos(0, 12, 100);
+	map.add(p);
+
+	p = new Cube(0.1, 6, 0.1);
+	p->color = Green;
+	p->SetPos(0, 12, 100);
+	map.add(p);
+
+
+
 }
 

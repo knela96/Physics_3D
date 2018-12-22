@@ -5,6 +5,11 @@
 
 struct PhysVehicle3D;
 
+enum PLAYER {
+	PLAYER1 = 0,
+	PLAYER2
+};
+
 #define MAX_ACCELERATION 1000.0f
 #define TURN_DEGREES 15.0f * DEGTORAD
 #define BRAKE_POWER 1000.0f
@@ -15,7 +20,7 @@ public:
 	ModulePlayer(Application* app, bool start_enabled = true);
 	virtual ~ModulePlayer();
 
-	bool Start(int x, int y, int z, float angle);
+	bool Start(int x, int y, int z, float angle, PLAYER player);
 	update_status Update(float dt);
 	bool Draw();
 	bool CleanUp();
@@ -33,4 +38,5 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+	PLAYER player;
 };

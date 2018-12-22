@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "Primitive.h"
 #include "ModulePlayer.h"
+#include "PhysBody3D.h"
 
 #define MAX_SNAKE 2
 
@@ -23,6 +24,8 @@ public:
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
+	void createMap();
+
 public:
 	
 	Sphere ball;
@@ -30,4 +33,6 @@ public:
 
 	ModulePlayer* player1 = new ModulePlayer(App,true);
 	ModulePlayer* player2 = new ModulePlayer(App, true);
+
+	p2List<Primitive*> map;
 };

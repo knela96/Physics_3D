@@ -14,9 +14,11 @@ ModulePlayer::~ModulePlayer()
 {}
 
 // Load assets
-bool ModulePlayer::Start(int x, int y, int z, float angle)
+bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 {
 	LOG("Loading player");
+
+	player = p;
 
 	VehicleInfo car;
 
@@ -105,15 +107,16 @@ bool ModulePlayer::Start(int x, int y, int z, float angle)
 
 	sphere.radius = 0.3f;
 	ball = App->physics->AddBody(sphere);
+	
 
 	cylinder.radius = 0.1f;
 	cylinder.height = 2.5f;
-	cylinder.SetRotation(45, { 1,0,0 });
-	cable = App->physics->AddBody(cylinder);
 
-	App->physics->AddConstraintHinge(*ball, *cable, vec3(0.3, 0, 0), vec3(-1.25, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0));
-	App->physics->AddConstraintHinge(*cable, *vehicle, vec3(1.25, 0, 0), vec3(0, 3, 0), vec3(0, 1, 0), vec3(0, 1, 0));
+	cylinder.SetRotation(90, { 0,1,0 });
+	cable = App->physics->AddBody(cylinder,0.0001f);
 
+	//App->physics->AddConstraintHinge(*ball, *cable, vec3(0.3, 0, 0), vec3(-1.25, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0),true);
+	//App->physics->AddConstraintHinge(*cable, *vehicle, vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0));
 
 	return true;
 }
@@ -131,7 +134,8 @@ update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
 
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if((App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && player == PLAYER2))
 	{
 		float km = vehicle->GetKmh();
 		if (km < 0.0f)
@@ -140,19 +144,22 @@ update_status ModulePlayer::Update(float dt)
 			acceleration = MAX_ACCELERATION;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if ((App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && player == PLAYER2))
 	{
 		if(turn < TURN_DEGREES)
 			turn +=  TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if ((App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && player == PLAYER2))
 	{
 		if(turn > -TURN_DEGREES)
 			turn -= TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && player == PLAYER2))
 	{
 		float km = vehicle->GetKmh();
 		if( km > 0.0f)
