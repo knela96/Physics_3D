@@ -97,9 +97,23 @@ bool ModulePlayer::Start(int x, int y, int z, float angle)
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
+
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
 	position = vehicle->GetPos();
+
+
+	sphere.radius = 0.3f;
+	ball = App->physics->AddBody(sphere);
+
+	cylinder.radius = 0.1f;
+	cylinder.height = 2.5f;
+	cylinder.SetRotation(45, { 1,0,0 });
+	cable = App->physics->AddBody(cylinder);
+
+	App->physics->AddConstraintHinge(*ball, *cable, vec3(0.3, 0, 0), vec3(-1.25, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0));
+	App->physics->AddConstraintHinge(*cable, *vehicle, vec3(1.25, 0, 0), vec3(0, 3, 0), vec3(0, 1, 0), vec3(0, 1, 0));
+
 
 	return true;
 }
@@ -164,6 +178,13 @@ update_status ModulePlayer::Update(float dt)
 
 bool ModulePlayer::Draw() {
 	vehicle->Render();
+
+	ball->GetTransform(&sphere.transform);
+	sphere.Render();
+
+	cable->GetTransform(&cylinder.transform);
+	cylinder.Render();
+
 	return true;
 }
 

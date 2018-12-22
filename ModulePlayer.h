@@ -22,6 +22,12 @@ public:
 
 public:
 
+	Sphere sphere;
+	PhysBody3D* ball;
+
+	Cylinder cylinder;
+	PhysBody3D* cable;
+
 	vec3 position;
 	PhysVehicle3D* vehicle;
 	float turn;
