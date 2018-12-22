@@ -105,25 +105,76 @@ void ModuleSceneIntro::createMap()
 
 	//Left
 	Cube* p = new Cube(30,15,0.1);
-	p->color = Green;
+	p->color = Blue;
 	p->SetPos(-30, 7.5f, 100);
 	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
 	//Right
 	p = new Cube(30, 15, 0.1);
-	p->color = Green;
+	p->color = Blue;
 	p->SetPos(30, 7.5f, 100);
 	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
 	//Center
 	p = new Cube(30, 6, 0.1);
-	p->color = Green;
+	p->color = Blue;
 	p->SetPos(0, 12, 100);
 	map.add(p);
-
-	p = new Cube(0.1, 6, 0.1);
-	p->color = Green;
-	p->SetPos(0, 12, 100);
+	App->physics->AddBody(*p,0.0f);
+	
+	//Side
+	p = new Cube(0.1, 15, 100);
+	p->color = Blue;
+	p->SetPos(-45, 7.5f, 50);
 	map.add(p);
+	App->physics->AddBody(*p,0.0f);
 
+	//Side
+	p = new Cube(0.1, 15, 100);
+	p->color = Blue;
+	p->SetPos(45, 7.5f, 50);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+
+	//ORANGE FIEDLD
+
+	//Side
+	p = new Cube(0.1, 15, 100);
+	p->color = Orange;
+	p->SetPos(-45, 7.5f, -50);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Side
+	p = new Cube(0.1, 15, 100);
+	p->color = Orange;
+	p->SetPos(45, 7.5f, -50);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Left
+	p = new Cube(30, 15, 0.1);
+	p->color = Orange;
+	p->SetPos(-30, 7.5f, -100);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Right
+	p = new Cube(30, 15, 0.1);
+	p->color = Orange;
+	p->SetPos(30, 7.5f, -100);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Center
+	p = new Cube(30, 6, 0.1);
+	p->color = Orange;
+	p->SetPos(0, 12, -100);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
 
 
 }
