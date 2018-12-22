@@ -30,9 +30,9 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	player1->Start(0, 0, 100, 3.14, PLAYER1);
+	player1->Start(0, 0, 95, 3.14, PLAYER1);
 
-	player2->Start(0, 0, -100, 0, PLAYER2);
+	player2->Start(0, 0, -95, 0, PLAYER2);
 
 	createMap();
 	PutSensors();
@@ -162,6 +162,34 @@ void ModuleSceneIntro::createMap()
 	p->SetPos(0, 12, 100);
 	map.add(p);
 	App->physics->AddBody(*p,0.0f);
+
+	//GoalCenter
+	p = new Cube(30, 9, 0.1);
+	p->color = Blue;
+	p->SetPos(0, 4.5, 112);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//GoalLeft
+	p = new Cube(0.1, 9, 12);
+	p->color = Blue;
+	p->SetPos(15, 4.5, 106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//GoalRight
+	p = new Cube(0.1, 9, 12);
+	p->color = Blue;
+	p->SetPos(-15, 4.5, 106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//GoalTop
+	p = new Cube(30, 0.1, 12);
+	p->color = Blue;
+	p->SetPos(0, 9, 106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
 	
 	//Side
 	p = new Cube(0.1, 15, 100);
@@ -174,6 +202,13 @@ void ModuleSceneIntro::createMap()
 	p = new Cube(0.1, 15, 100);
 	p->color = Blue;
 	p->SetPos(45, 7.5f, 50);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Top
+	p = new Cube(90, 0.1, 100);
+	p->color = Blue;
+	p->SetPos(0, 15, 50);
 	map.add(p);
 	App->physics->AddBody(*p, 0.0f);
 
@@ -215,7 +250,40 @@ void ModuleSceneIntro::createMap()
 	map.add(p);
 	App->physics->AddBody(*p, 0.0f);
 
+	//GoalCenter
+	p = new Cube(30, 9, 0.1);
+	p->color = Orange;
+	p->SetPos(0, 4.5, -112);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
 
+	//GoalLeft
+	p = new Cube(0.1, 9, 12);
+	p->color = Orange;
+	p->SetPos(15, 4.5, -106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//GoalRight
+	p = new Cube(0.1, 9, 12);
+	p->color = Orange;
+	p->SetPos(-15, 4.5, -106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//GoalTop
+	p = new Cube(30, 0.1, -12);
+	p->color = Orange;
+	p->SetPos(0, 9, 106);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
+
+	//Top
+	p = new Cube(90, 0.1, 100);
+	p->color = Orange;
+	p->SetPos(0, 15, -50);
+	map.add(p);
+	App->physics->AddBody(*p, 0.0f);
 }
 
 void ModuleSceneIntro::PutSensors()

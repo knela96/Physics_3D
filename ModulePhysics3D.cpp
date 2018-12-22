@@ -333,7 +333,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 
 	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);
 	
-	pvehicle = rotateVehicle(info.angle, pvehicle);
+	pvehicle = rotateVehicle(M_PI / 4, pvehicle);
 
 	world->addVehicle(vehicle);
 	vehicles.add(pvehicle);

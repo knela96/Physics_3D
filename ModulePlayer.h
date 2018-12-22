@@ -41,4 +41,6 @@ public:
 	float acceleration;
 	float brake;
 	PLAYER player;
+
+	Timer timer;
 };

@@ -5,6 +5,7 @@
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
 #include "cmath"
+#include "Timer.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
@@ -116,6 +117,9 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 	cylinder.height = 2.5f;
 	cylinder.SetPos(x, y + 2, z);
 
+	
+
+	timer.Start();
 
 	//cable = App->physics->AddBody(cylinder,0.0001f);
 
@@ -170,6 +174,22 @@ update_status ModulePlayer::Update(float dt)
 			brake = BRAKE_POWER;
 		else
 			acceleration = -MAX_ACCELERATION;
+	}
+
+	if ((App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_DOWN && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
+	{
+		if (timer.Read() > 1500) {
+			timer.Start();
+			vehicle->Push(0, 5000, 0);
+		}
+	}
+
+	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2))
+	{
+		float f = vehicle->vehicle->getForwardVector().getZ() * 100;
+		vehicle->Push(0, 0, f);
 	}
 
 	position = vehicle->GetPos();
