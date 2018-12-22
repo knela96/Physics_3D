@@ -7,6 +7,9 @@
 #include "PhysVehicle3D.h"
 #include "ModulePlayer.h"
 #include "Color.h"
+#include "PhysBody3D.h"
+#include "ModulePhysics3D.h"
+#include "cmath"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -21,6 +24,9 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	player1 = new ModulePlayer(App, true);
+	player2 = new ModulePlayer(App, true);
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
@@ -29,12 +35,15 @@ bool ModuleSceneIntro::Start()
 	player2->Start(0, 0, -100, 0, PLAYER2);
 
 	createMap();
+	PutSensors();
 
 	ball.radius = 2;
 	ball.color = Blue;
 	pb_ball = App->physics->AddBody(ball, 3.0f);
 	pb_ball->GetTransform(&ball.transform);
 	pb_ball->SetPos(0, 0, 0);
+	
+	
 	
 	return ret;
 }
@@ -91,11 +100,41 @@ bool ModuleSceneIntro::Draw() {
 		item->data->Render();
 	}
 
+	p2List_item<Primitive*>* item2 = sensors.getFirst();
+	for (int i = 0; i < sensors.count() && item2 != nullptr; item2 = item2->next) {
+		item2->data->Render();
+	}
+
 	return ret;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
+	if (body1 == goal_player1)
+	{
+		if (body2 == pb_ball)
+		{
+			//add score player1 and reset position
+			player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
+			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
+
+			RotateBody(player1->vehicle);
+			RotateBody(player2->vehicle);
+
+		}
+	}
+
+	else if (body1 == goal_player2)
+	{
+		if (body2 == pb_ball)
+		{
+			//add score player2 and reset position
+			player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
+			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
+			RotateBody(player1->vehicle);
+			RotateBody(player2->vehicle);
+		}
+	}
 
 }
 
@@ -179,3 +218,35 @@ void ModuleSceneIntro::createMap()
 
 }
 
+void ModuleSceneIntro::PutSensors()
+{
+	Cube* sensor1 = new Cube(30, 9, 0.1);
+	sensor1->SetPos(0, 4.5, 100);
+	sensor1->color = White;
+	sensors.add(sensor1);
+	goal_player1 = App->physics->AddBody(*sensor1, 0.0f);
+	goal_player1->SetSensors();
+	goal_player1->collision_listeners.add(this);
+	
+	Cube* sensor2 = new Cube(30, 9, 0.1);
+	sensor2->SetPos(0, 4.5, -100);
+	sensor2->color = White;
+	sensors.add(sensor2);
+	goal_player2 = App->physics->AddBody(*sensor2, 0.0f);
+	goal_player2->SetSensors();
+	goal_player2->collision_listeners.add(this);
+}
+
+void ModuleSceneIntro::RotateBody(PhysVehicle3D * vehicle)
+{
+	float x = vehicle->GetPos().x;
+	float z = vehicle->GetPos().z;
+	float h = sqrt(x*x + z * z);
+
+	float b = x / h;
+	float angle = acos(b);
+	if (vehicle == player1->vehicle)
+		App->physics->rotateVehicle(angle + M_PI/2, vehicle);
+	else if (vehicle == player2->vehicle)
+		App->physics->rotateVehicle(angle - M_PI / 2, vehicle);
+}

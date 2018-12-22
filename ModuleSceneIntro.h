@@ -25,14 +25,20 @@ public:
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 	void createMap();
+	void PutSensors();
+
+	void RotateBody(PhysVehicle3D * vehicle);
 
 public:
 	
 	Sphere ball;
 	PhysBody3D* pb_ball;
+	PhysBody3D* goal_player1;
+	PhysBody3D* goal_player2;
 
-	ModulePlayer* player1 = new ModulePlayer(App,true);
-	ModulePlayer* player2 = new ModulePlayer(App, true);
+	ModulePlayer* player1;
+	ModulePlayer* player2;
 
 	p2List<Primitive*> map;
+	p2List<Primitive*> sensors;
 };

@@ -27,6 +27,8 @@ public:
 
 public:
 
+	vec3 initialPosition;
+
 	Sphere sphere;
 	PhysBody3D* ball;
 

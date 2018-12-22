@@ -58,5 +58,10 @@ vec3 PhysBody3D::GetPos()
 	return vector;
 }
 
+void PhysBody3D::SetSensors()
+{
+	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+}
+
 
 

@@ -22,9 +22,11 @@ public:
 	void SetPos(float x, float y, float z);
 	vec3 GetPos();
 
+	void SetSensors();
+
 private:
 	btRigidBody* body = nullptr;
-
+	
 public:
 	p2List<Module*> collision_listeners;
 };

@@ -21,6 +21,8 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 
 	player = p;
 
+	initialPosition = { (float)x,(float)y,(float)z };
+
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
