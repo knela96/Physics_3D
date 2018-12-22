@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
+#include "cmath"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
@@ -23,8 +24,8 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 2, 4);
-	car.chassis_offset.Set(0, 1.5, 0);
+	car.chassis_size.Set(2, 1, 4);
+	car.chassis_offset.Set(0, 1.1, 0);
 	car.mass = 500.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
@@ -36,7 +37,7 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
-	float wheel_radius = 0.6f;
+	float wheel_radius = 0.3f;
 	float wheel_width = 0.5f;
 	float suspensionRestLength = 1.2f;
 
@@ -111,9 +112,10 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 
 	cylinder.radius = 0.1f;
 	cylinder.height = 2.5f;
+	cylinder.SetPos(x, y + 2, z);
 
-	cylinder.SetRotation(90, { 0,1,0 });
-	cable = App->physics->AddBody(cylinder,0.0001f);
+
+	//cable = App->physics->AddBody(cylinder,0.0001f);
 
 	//App->physics->AddConstraintHinge(*ball, *cable, vec3(0.3, 0, 0), vec3(-1.25, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0),true);
 	//App->physics->AddConstraintHinge(*cable, *vehicle, vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0));
@@ -174,6 +176,24 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
 
+	if (vehicle != nullptr)
+	{
+		vec3 c_pos = vehicle->GetPos() + vec3(0, 3, 0);
+
+		cylinder.SetPos(c_pos.x, c_pos.y, c_pos.z);
+
+		float x = abs(App->scene_intro->pb_ball->GetPos().x - c_pos.x);
+		float z = abs(App->scene_intro->pb_ball->GetPos().z - c_pos.z);
+		float h = sqrt(x * x + z * z);
+
+		float b = x / h;
+		float angle = acos(b) / M_PI * 180.0f;
+		LOG("angles: %f", angle);
+
+		cylinder.SetRotation(angle, { 0,1,0 });
+	}
+
+
 	Draw();
 
 	char title[80];
@@ -189,7 +209,6 @@ bool ModulePlayer::Draw() {
 	ball->GetTransform(&sphere.transform);
 	sphere.Render();
 
-	cable->GetTransform(&cylinder.transform);
 	cylinder.Render();
 
 	return true;
