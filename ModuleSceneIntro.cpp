@@ -10,6 +10,12 @@
 #include "PhysBody3D.h"
 #include "ModulePhysics3D.h"
 #include "cmath"
+#include "ModuleRenderer3D.h"
+
+//#include <iostream>
+#include "glut/glut.h"
+#include <string>
+
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -36,14 +42,13 @@ bool ModuleSceneIntro::Start()
 
 	createMap();
 	PutSensors();
-
+	Score();
+	
 	ball.radius = 2;
 	ball.color = White;
 	pb_ball = App->physics->AddBody(ball, 3.0f);
 	pb_ball->GetTransform(&ball.transform);
 	pb_ball->SetPos(0, 0, 0);
-	
-	
 	
 	return ret;
 }
@@ -99,50 +104,94 @@ bool ModuleSceneIntro::Draw() {
 	for (int i = 0; i < map.count() && item != nullptr; item = item->next) {
 		item->data->Render();
 	}
-/*
-	p2List_item<Primitive*>* item2 = sensors.getFirst();
-	for (int i = 0; i < sensors.count() && item2 != nullptr; item2 = item2->next) {
+
+	p2List_item<Cylinder*>* item2 = cylinders_list1.getFirst();
+	for (int i = 0; i < cylinders_list1.count() && item2 != nullptr; item2 = item2->next) {
 		item2->data->Render();
-	}*/
+	}
+
+	p2List_item<Cylinder*>* item3 = cylinders_list2.getFirst();
+	for (int i = 0; i < cylinders_list2.count() && item3 != nullptr; item3 = item3->next) {
+		item3->data->Render();
+	}
 
 	return ret;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	if (body1 == goal_player1)
+	time = timer.Read();
+	if (time >= 1000)
 	{
-		if (body2 == pb_ball)
+		if (body1 == goal_player1)
 		{
-			//add score player1 and reset position
-			player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
-			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
-			RotateBody(player1->vehicle);
-			RotateBody(player2->vehicle);
-			pb_ball->SetPos(0, 0, 0);
-			pb_ball->SetVelocityZero();
-			player1->vehicle->SetVelocityZero();
-			player2->vehicle->SetVelocityZero();
+			if (body2 == pb_ball)
+			{
+				//add score player1 and reset position
+				player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
+				player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
+				RotateBody(player1->vehicle);
+				RotateBody(player2->vehicle);
+				pb_ball->SetPos(0, 0, 0);
+				pb_ball->SetVelocityZero();
+				player1->vehicle->SetVelocityZero();
+				player2->vehicle->SetVelocityZero();
+
+				p2List_item<Cylinder*>* item = cylinders_list1.getFirst();
+				for (int i = 0; i < cylinders_list1.count() && item->next != nullptr; item = item->next) {
+					if (item->data->color.IsWhite())
+					{
+						item->data->color = Green;
+						timer.Start();
+						break;
+					}
+					else if(item->next->next == nullptr)
+					{
+						p2List_item<Cylinder*>* item = cylinders_list1.getFirst();
+						for (int i = 0; i < cylinders_list1.count() && item != nullptr; item = item->next) {
+							item->data->color = White;
+						}
+						timer.Start();
+					}
+				}
+			}
+		}
+		else if (body1 == goal_player2)
+		{
+			if (body2 == pb_ball)
+			{
+				//add score player2 and reset position
+				player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
+				player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
+				RotateBody(player1->vehicle);
+				RotateBody(player2->vehicle);
+				pb_ball->SetPos(0, 0, 0);
+				pb_ball->Push(0, 0, 0);
+				pb_ball->SetVelocityZero();
+				player1->vehicle->SetVelocityZero();
+				player2->vehicle->SetVelocityZero();
+
+				p2List_item<Cylinder*>* item = cylinders_list2.getFirst();
+				for (int i = 0; i < cylinders_list2.count() && item != nullptr; item = item->next) {
+					if (item->data->color.IsWhite())
+					{
+						item->data->color = Green;
+						timer.Start();
+						break;
+					}
+					else if (item->next->data == nullptr)
+					{
+						p2List_item<Cylinder*>* item = cylinders_list2.getFirst();
+						for (int i = 0; i < cylinders_list2.count() && item != nullptr; item = item->next) {
+							item->data->color = White;
+						}	
+						timer.Start();
+					}
+				}
+			}
 		}
 	}
-
-	else if (body1 == goal_player2)
-	{
-		if (body2 == pb_ball)
-		{
-			//add score player2 and reset position
-			player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
-			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
-			RotateBody(player1->vehicle);
-			RotateBody(player2->vehicle);
-			pb_ball->SetPos(0, 0, 0);
-			pb_ball->Push(0, 0, 0);
-			pb_ball->SetVelocityZero();
-			player1->vehicle->SetVelocityZero();
-			player2->vehicle->SetVelocityZero();
-		}
-	}
-
+	
 }
 
 void ModuleSceneIntro::createMap()
@@ -325,3 +374,31 @@ void ModuleSceneIntro::RotateBody(PhysVehicle3D * vehicle)
 	else if (vehicle == player2->vehicle)
 		App->physics->rotateVehicle(angle - M_PI / 2, vehicle);
 }
+
+void ModuleSceneIntro::Score()
+{
+	float x = -12.75;
+	int y = 11;
+	int z = 98.5;
+
+	for (int i = 0; i < 5; ++i)
+	{
+		Cylinder* score = new Cylinder(2, 0.75);
+		score->SetPos(x, y, z);
+		score->SetRotation(90, { 0,1,0 });
+		score->color = White;
+		cylinders_list1.add(score);
+		x += 6.5;
+	}
+
+	for (int i = 0; i < 5; ++i)
+	{
+		x -= 6.5;
+		Cylinder* score = new Cylinder(2, 0.75);
+		score->SetPos(-x, y, -z);
+		score->SetRotation(90, { 0,1,0 });
+		score->color = White;
+		cylinders_list2.add(score);	
+	}
+}
+

@@ -5,6 +5,7 @@
 #include "Primitive.h"
 #include "ModulePlayer.h"
 #include "PhysBody3D.h"
+#include "Timer.h"
 
 #define MAX_SNAKE 2
 
@@ -29,6 +30,8 @@ public:
 
 	void RotateBody(PhysVehicle3D * vehicle);
 
+	void Score();
+
 public:
 	
 	Sphere ball;
@@ -41,4 +44,12 @@ public:
 
 	p2List<Primitive*> map;
 	p2List<Primitive*> sensors;
+
+	p2List<Cylinder*> cylinders_list1;
+	p2List<Cylinder*> cylinders_list2;
+
+	Timer timer;
+	Uint32 time = 0;
+
+	bool goal = false;
 };
