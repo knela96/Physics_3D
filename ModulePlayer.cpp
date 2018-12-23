@@ -112,7 +112,7 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color
 
 	sphere.radius = 0.15f;
 	ball = App->physics->AddBody(sphere,0.001f);
-	
+	ball->SetSensors();	
 
 	cylinder.radius = 0.05f;
 	cylinder.height = 2.5f;
