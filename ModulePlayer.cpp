@@ -121,6 +121,7 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color
 	arrow.SetPos(x, y + 3, z);
 
 	timer.Start();
+	timer2.Start();
 
 	cable = App->physics->AddBody(cylinder,0.51f);
 	cylinder.SetRotation(90, vec3({ 0,0,1 }));
@@ -188,8 +189,8 @@ update_status ModulePlayer::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_KP_0) == KEY_DOWN && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
 	{
-		if (timer.Read() > 1500) {
-			timer.Start();
+		if (timer2.Read() > 1500) {
+			timer2.Start();
 			vehicle->Push(0, 5000, 0);
 		}
 	}
@@ -197,13 +198,16 @@ update_status ModulePlayer::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_DOWN && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN && player == PLAYER2) && boost)
 	{
-		timer.Start();
+		if(timer.Read() >= 2000)
+			timer.Start();
+		else
+			timer.Resume();
 	}
 
 	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2) && boost)
 	{
-		if (timer.Read() < 2000) {
+		if (timer.Read() < 2000 && timer.Read() != 0) {
 			if (km < 150.0f) {
 				vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
 			}
@@ -212,6 +216,12 @@ update_status ModulePlayer::Update(float dt)
 			boost = false;
 			timer.Stop();
 		}
+	}
+
+	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_UP && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && player == PLAYER2) && boost)
+	{
+		timer.Stop();
 	}
 
 	if (boost)

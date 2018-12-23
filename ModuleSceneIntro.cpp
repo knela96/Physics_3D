@@ -265,9 +265,13 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 				item->data->time.Start();
 				if (body1 == player1->vehicle || body2 == player1->vehicle) {
 					player1->boost = true;
+					player1->timer.Stop();
+					player1->timer.Start();
 				}
 				if (body1 == player2->vehicle || body2 == player2->vehicle) {
 					player2->boost = true;
+					player2->timer.Stop();
+					player2->timer.Start();
 				}
 			}
 		}
@@ -546,5 +550,7 @@ void ModuleSceneIntro::RestartPositions()
 	pb_ball->SetVelocityZero();
 	player1->vehicle->SetVelocityZero();
 	player2->vehicle->SetVelocityZero();
+	player1->boost = false;
+	player2->boost = false;
 }
 

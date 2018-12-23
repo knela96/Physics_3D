@@ -16,6 +16,7 @@ void Timer::Start()
 {
 	running = true;
 	started_at = SDL_GetTicks();
+	resume_at = 0;
 }
 
 // ---------------------------------------------
@@ -26,10 +27,17 @@ void Timer::Stop()
 }
 
 // ---------------------------------------------
-void Timer::Stop()
+void Timer::Resume()
+{
+	running = true;
+	started_at = SDL_GetTicks() - (stopped_at - started_at);
+}
+//-----------------------------------------------
+void Timer::Reset()
 {
 	running = false;
 	stopped_at = SDL_GetTicks();
+	resume_at = SDL_GetTicks();
 }
 
 // ---------------------------------------------

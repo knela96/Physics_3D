@@ -46,4 +46,5 @@ public:
 	bool boost = false;
 
 	Timer timer;
+	Timer timer2;
 };
