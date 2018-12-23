@@ -32,6 +32,10 @@ public:
 
 	void Score();
 
+	void TimeLeft();
+
+	void RestartPositions();
+
 public:
 	
 	Sphere ball;
@@ -47,9 +51,14 @@ public:
 
 	p2List<Cylinder*> cylinders_list1;
 	p2List<Cylinder*> cylinders_list2;
+	p2List<Cylinder*> time_list;
 
 	Timer timer;
+	Timer time_left;
 	Uint32 time = 0;
+	Uint32 time_remaining;
+	int interval = 60000;
+	int counter = interval;
 
 	bool goal = false;
 };
