@@ -3,6 +3,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
+#include "Bullet/include/btBulletDynamicsCommon.h"
 #include "glut/glut.h"
 
 #pragma comment (lib, "glut/glut32.lib")
@@ -79,6 +80,11 @@ void Primitive::InnerRender() const
 	glEnd();
 
 	glPointSize(1.0f);
+}
+
+//-------------------------------------------------------------
+vec3& Primitive::GetPos() {
+	return transform.translation();
 }
 
 // ------------------------------------------------------------
@@ -220,7 +226,28 @@ void Cylinder::InnerRender() const
 	}
 	glEnd();
 }
+//Triangle--------------------
+Triangle::Triangle() : Primitive(), width(1.0f), height(1.0f)
+{
+	type = PrimitiveTypes::Primitive_Cylinder;
+}
 
+Triangle::Triangle(float radius, float height) : Primitive(), width(radius), height(height)
+{
+	type = PrimitiveTypes::Primitive_Cylinder;
+}
+
+void Triangle::InnerRender() const
+{
+		glBegin(GL_TRIANGLES);
+		glColor3f(0.0, 0.0, 0.0);
+		glVertex3f(-width, 0.0, 0.0);
+		glColor3f(0.0, 1.0, 0.0);
+		glVertex3f(0.0, 0.0, width);
+		glColor3f(0.0, 0.0, 0.0);
+		glVertex3f(width, 0.0, 0.0);
+		glEnd();
+}
 // LINE ==================================================
 Line::Line() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
 {

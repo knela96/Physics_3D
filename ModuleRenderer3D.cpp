@@ -129,17 +129,17 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 		if (loop == 0)
 		{
-			glLoadMatrixf(App->camera->GetViewMatrix());
+			glLoadMatrixf(App->camera2->GetViewMatrix());
 			// light 0 on cam pos
-			lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+			lights[0].SetPos(App->camera2->Position.x, App->camera2->Position.y, App->camera2->Position.z);
 
 		}
 
 		if (loop == 1)							
 		{
-			glLoadMatrixf(App->camera2->GetViewMatrix());
+			glLoadMatrixf(App->camera->GetViewMatrix());
 			// light 0 on cam pos
-			lights[0].SetPos(App->camera2->Position.x, App->camera2->Position.y, App->camera2->Position.z);
+			lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 		}
 
 		for (uint i = 0; i < MAX_LIGHTS; ++i)

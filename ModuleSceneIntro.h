@@ -12,6 +12,12 @@
 struct PhysBody3D;
 struct PhysMotor3D;
 
+struct Boosts {
+	p2List<PhysBody3D*> boosts;
+	bool active;
+	Timer time;
+};
+
 class ModuleSceneIntro : public Module
 {
 public:
@@ -28,6 +34,8 @@ public:
 	void createMap();
 	void PutSensors();
 
+	void createBoost(vec3 pos, float radius, float height);
+
 	void RotateBody(PhysVehicle3D * vehicle);
 
 	void Score();
@@ -42,6 +50,8 @@ public:
 	PhysBody3D* pb_ball;
 	PhysBody3D* goal_player1;
 	PhysBody3D* goal_player2;
+
+	p2List<PhysBody3D*> boosts;
 
 	ModulePlayer* player1;
 	ModulePlayer* player2;

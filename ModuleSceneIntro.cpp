@@ -47,12 +47,12 @@ bool ModuleSceneIntro::Start()
 
 	ball.radius = 2;
 	ball.color = White;
-	pb_ball = App->physics->AddBody(ball, 3.0f);
+
+	pb_ball = App->physics->AddBody(ball, 0.5f);
 	pb_ball->GetTransform(&ball.transform);
-	pb_ball->SetPos(0, 0, 0);
+	pb_ball->SetPos(0, 2, 0);	
 	
 	time_left.Start();
-
 	return ret;
 }
 
@@ -136,8 +136,12 @@ bool ModuleSceneIntro::Draw() {
 	Plane p(0, 1, 0, 0);
 	p.axis = true;
 	p.Render();
+
 	ret = player1->Draw();
 	ret = player2->Draw();
+	//player1->arrow.Render();//If Drawn inside player on the second player duplicates the arrow
+	//player2->arrow.Render();
+
 	ball.Render();
 
 	p2List_item<Primitive*>* item = map.getFirst();
@@ -162,6 +166,7 @@ bool ModuleSceneIntro::Draw() {
 
 	return ret;
 }
+
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
@@ -399,6 +404,21 @@ void ModuleSceneIntro::PutSensors()
 	goal_player2 = App->physics->AddBody(*sensor2, 0.0f);
 	goal_player2->SetSensors();
 	goal_player2->collision_listeners.add(this);
+
+	createBoost({ 35,0.5,0 }, 0.5, 0.5);
+	createBoost({ -35,0.5,0 }, 0.5, 0.5);
+
+}
+
+void ModuleSceneIntro::createBoost(vec3 pos, float radius, float height) {
+	Cylinder* boost = new Cylinder(radius, height);
+	boost->SetPos(pos.x, pos.y, pos.z);
+	boost->SetRotation(90, vec3(0, 0, 1));
+	boost->color = Green;
+	sensors.add(boost);
+	boosts.add(App->physics->AddBody(*boost, 0.0f));
+	boosts.getLast()->data->SetSensors();
+	boosts.getLast()->data->collision_listeners.add(this);
 }
 
 void ModuleSceneIntro::RotateBody(PhysVehicle3D * vehicle)
