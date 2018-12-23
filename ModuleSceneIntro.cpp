@@ -98,8 +98,9 @@ update_status ModuleSceneIntro::Update(float dt)
 				}
 
 				RestartPositions();
+				//time_spend = time_left.Read();
 			}
-
+			
 		}
 		interval += counter;
 	}
@@ -188,6 +189,12 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 							item->data->color = White;
 						}
 						timer.Start();
+						time_left.Start();
+						interval = counter;
+						p2List_item<Cylinder*>* item2 = time_list.getFirst();
+						for (int i = 0; i < time_list.count() && item2 != nullptr; item2 = item2->next) {
+							item2->data->color = Black;
+						}
 					}
 				}
 			}
@@ -213,6 +220,12 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 							item->data->color = White;
 						}	
 						timer.Start();
+						time_left.Start();
+						interval = counter;
+						p2List_item<Cylinder*>* item2 = time_list.getFirst();
+						for (int i = 0; i < time_list.count() && item2 != nullptr; item2 = item2->next) {
+							item2->data->color = Black;
+						}
 					}
 				}
 			}

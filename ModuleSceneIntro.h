@@ -57,6 +57,8 @@ public:
 	Timer time_left;
 	Uint32 time = 0;
 	Uint32 time_remaining;
+	Uint32 time_spend = 0;
+
 	int interval = 60000;
 	int counter = interval;
 
