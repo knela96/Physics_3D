@@ -20,7 +20,7 @@ public:
 	ModulePlayer(Application* app, bool start_enabled = true);
 	virtual ~ModulePlayer();
 
-	bool Start(int x, int y, int z, float angle, PLAYER player);
+	bool Start(int x, int y, int z, float angle, PLAYER player, Color color);
 	update_status Update(float dt);
 	bool Draw();
 	bool CleanUp();

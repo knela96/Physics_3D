@@ -2,6 +2,7 @@
 
 #include "PhysBody3D.h"
 #include "glmath.h"
+#include "Color.h"
 
 class btRaycastVehicle;
 struct PhysBody3D;
@@ -36,6 +37,7 @@ struct  VehicleInfo
 	float angle;
 	Wheel* wheels;
 	int num_wheels;
+	Color color;
 };
 
 

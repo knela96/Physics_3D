@@ -16,7 +16,7 @@ ModulePlayer::~ModulePlayer()
 {}
 
 // Load assets
-bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
+bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color)
 {
 	LOG("Loading player");
 
@@ -28,21 +28,22 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 1, 4);
-	car.chassis_offset.Set(0, 1.1, 0);
+	car.chassis_offset.Set(0, 1.5, 0);
 	car.mass = 500.0f;
-	car.suspensionStiffness = 15.88f;
+	car.suspensionStiffness = 3.0f;
 	car.suspensionCompression = 0.83f;
-	car.suspensionDamping = 0.88f;
+	car.suspensionDamping = 0.5f;
 	car.maxSuspensionTravelCm = 1000.0f;
 	car.frictionSlip = 50.5;
 	car.maxSuspensionForce = 6000.0f;
 	car.angle = angle;
+	car.color = color;
 
 	// Wheel properties ---------------------------------------
-	float connection_height = 1.2f;
+	float connection_height = 2.0f;
 	float wheel_radius = 0.3f;
 	float wheel_width = 0.5f;
-	float suspensionRestLength = 1.2f;
+	float suspensionRestLength = 2.0f;
 
 	// Don't change anything below this line ------------------
 
@@ -109,11 +110,11 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 	position = vehicle->GetPos();
 
 
-	sphere.radius = 0.3f;
-	ball = App->physics->AddBody(sphere);
+	sphere.radius = 0.15f;
+	ball = App->physics->AddBody(sphere,0.001f);
 	
 
-	cylinder.radius = 0.1f;
+	cylinder.radius = 0.05f;
 	cylinder.height = 2.5f;
 	cylinder.SetPos(x, y + 2, z);
 
@@ -121,10 +122,12 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p)
 
 	timer.Start();
 
-	//cable = App->physics->AddBody(cylinder,0.0001f);
+	cable = App->physics->AddBody(cylinder,0.51f);
+	cylinder.SetRotation(90, vec3({ 0,0,1 }));
 
-	//App->physics->AddConstraintHinge(*ball, *cable, vec3(0.3, 0, 0), vec3(-1.25, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0),true);
-	//App->physics->AddConstraintHinge(*cable, *vehicle, vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0));
+	App->physics->AddConstraintHinge(*vehicle, *cable, vec3(0.8, 2.0f, -2.1), vec3(2.5/2, 0, 0), vec3(1, 0, 0), vec3(0, 0, 1));
+	//App->physics->AddConstraintHinge(*vehicle, *cable, vec3(0, 1.5f, -2), vec3(0.9, 0, 0), vec3(1, 0, 0), vec3(0, 0, 1));
+	App->physics->AddConstraintHinge(*cable, *ball, vec3(-1.25, 0, 0), vec3(0, 0, 0), vec3(0, 0, 1), vec3(0, 0, 1), true);
 
 	return true;
 }
@@ -148,8 +151,8 @@ update_status ModulePlayer::Update(float dt)
 		float km = vehicle->GetKmh();
 		if (km < 0.0f)
 			acceleration = MAX_ACCELERATION * 5; //brake = BRAKE_POWER;
-		else
-			acceleration = MAX_ACCELERATION;
+		else if(km < 100)
+			acceleration = 5000.0f;
 	}
 
 	if ((App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && player == PLAYER1) ||
@@ -157,6 +160,7 @@ update_status ModulePlayer::Update(float dt)
 	{
 		if(turn < TURN_DEGREES)
 			turn +=  TURN_DEGREES;
+	
 	}
 
 	if ((App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && player == PLAYER1) ||
@@ -176,7 +180,7 @@ update_status ModulePlayer::Update(float dt)
 			acceleration = -MAX_ACCELERATION;
 	}
 
-	if ((App->input->GetKey(SDL_SCANCODE_RCTRL) == KEY_DOWN && player == PLAYER1) ||
+	if ((App->input->GetKey(SDL_SCANCODE_KP_0) == KEY_DOWN && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
 	{
 		if (timer.Read() > 1500) {
@@ -188,9 +192,13 @@ update_status ModulePlayer::Update(float dt)
 	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2))
 	{
-		float f = vehicle->vehicle->getForwardVector().getZ() * 100;
-		vehicle->Push(0, 0, f);
+		float km = vehicle->GetKmh();
+		if (km < 200.0f) {
+			vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 100);
+		}
 	}
+
+
 
 	position = vehicle->GetPos();
 
@@ -200,9 +208,7 @@ update_status ModulePlayer::Update(float dt)
 
 	if (vehicle != nullptr)
 	{
-		vec3 c_pos = vehicle->GetPos() + vec3(0, 3, 0);
-
-		cylinder.SetPos(c_pos.x, c_pos.y, c_pos.z);
+		vec3 c_pos = vehicle->GetPos() + vec3(0, 5, 0);
 
 		float x = abs(App->scene_intro->pb_ball->GetPos().x - c_pos.x);
 		float z = abs(App->scene_intro->pb_ball->GetPos().z - c_pos.z);
@@ -212,6 +218,7 @@ update_status ModulePlayer::Update(float dt)
 		float angle = acos(b) / M_PI * 180.0f;
 		LOG("angles: %f", angle);
 
+		cylinder.SetPos(c_pos.x, c_pos.y, c_pos.z);
 		cylinder.SetRotation(angle, { 0,1,0 });
 	}
 
@@ -229,8 +236,10 @@ bool ModulePlayer::Draw() {
 	vehicle->Render();
 
 	ball->GetTransform(&sphere.transform);
-	sphere.Render();
 
+	cable->GetTransform(&cylinder.transform);
+
+	sphere.Render();
 	cylinder.Render();
 
 	return true;
