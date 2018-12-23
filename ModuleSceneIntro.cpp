@@ -121,6 +121,8 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			RotateBody(player2->vehicle);
 			pb_ball->SetPos(0, 0, 0);
 			pb_ball->SetVelocityZero();
+			player1->vehicle->SetVelocityZero();
+			player2->vehicle->SetVelocityZero();
 		}
 	}
 
@@ -136,6 +138,8 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			pb_ball->SetPos(0, 0, 0);
 			pb_ball->Push(0, 0, 0);
 			pb_ball->SetVelocityZero();
+			player1->vehicle->SetVelocityZero();
+			player2->vehicle->SetVelocityZero();
 		}
 	}
 
