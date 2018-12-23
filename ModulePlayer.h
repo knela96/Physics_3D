@@ -35,6 +35,8 @@ public:
 	Cylinder cylinder;
 	PhysBody3D* cable;
 
+	Triangle arrow;
+
 	vec3 position;
 	PhysVehicle3D* vehicle;
 	float turn;

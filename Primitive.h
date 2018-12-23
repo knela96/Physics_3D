@@ -21,6 +21,7 @@ public:
 
 	virtual void	Render() const;
 	virtual void	InnerRender() const;
+	vec3& GetPos();
 	void			SetPos(float x, float y, float z);
 	void			SetRotation(float angle, const vec3 &u);
 	void			Scale(float x, float y, float z);
@@ -69,7 +70,17 @@ public:
 	float radius;
 	float height;
 };
-
+// ============================================
+class Triangle : public Primitive
+{
+public:
+	Triangle();
+	Triangle(float width, float height);
+	void InnerRender() const;
+public:
+	float width;
+	float height;
+};
 // ============================================
 class Line : public Primitive
 {

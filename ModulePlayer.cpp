@@ -118,7 +118,7 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color
 	cylinder.height = 2.5f;
 	cylinder.SetPos(x, y + 2, z);
 
-	
+	arrow.SetPos(x, y + 3, z);
 
 	timer.Start();
 
@@ -152,7 +152,7 @@ update_status ModulePlayer::Update(float dt)
 		if (km < 0.0f)
 			acceleration = MAX_ACCELERATION * 5; //brake = BRAKE_POWER;
 		else if(km < 100)
-			acceleration = 5000.0f;
+			acceleration = MAX_ACCELERATION;
 	}
 
 	if ((App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && player == PLAYER1) ||
@@ -206,9 +206,11 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
 
+	arrow.SetPos(vehicle->GetPos().x, vehicle->GetPos().y + 2.5, vehicle->GetPos().z);
+
 	if (vehicle != nullptr)
 	{
-		vec3 c_pos = vehicle->GetPos() + vec3(0, 5, 0);
+		/*vec3 c_pos = vehicle->GetPos() + vec3(0, 5, 0);
 
 		float x = abs(App->scene_intro->pb_ball->GetPos().x - c_pos.x);
 		float z = abs(App->scene_intro->pb_ball->GetPos().z - c_pos.z);
@@ -220,6 +222,10 @@ update_status ModulePlayer::Update(float dt)
 
 		cylinder.SetPos(c_pos.x, c_pos.y, c_pos.z);
 		cylinder.SetRotation(angle, { 0,1,0 });
+
+		mat4x4 mat4 = look( vehicle->GetPos(),vec3(0,0,0), vec3(0,1,0));
+		LOG(" %f %f %f\n%f %f %f\n%f %f %f\n%f %f %f\n%f %f %f\n",mat4[0],mat4[1],mat4[2], mat4[3], mat4[4], mat4[5], mat4[6], mat4[7], mat4[8], mat4[9], mat4[10], mat4[11], mat4[12], mat4[13], mat4[14], mat4[15])
+		arrow.transform = mat4;*/
 	}
 
 
