@@ -23,6 +23,7 @@ public:
 	vec3 GetPos();
 
 	void SetSensors();
+	void SetVelocityZero();
 
 private:
 	btRigidBody* body = nullptr;

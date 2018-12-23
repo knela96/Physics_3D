@@ -117,10 +117,10 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			//add score player1 and reset position
 			player1->vehicle->SetPos(player1->initialPosition.x, player1->initialPosition.y, player1->initialPosition.z);
 			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
-
 			RotateBody(player1->vehicle);
 			RotateBody(player2->vehicle);
-
+			pb_ball->SetPos(0, 0, 0);
+			pb_ball->SetVelocityZero();
 		}
 	}
 
@@ -133,6 +133,9 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			player2->vehicle->SetPos(player2->initialPosition.x, player2->initialPosition.y, player2->initialPosition.z);
 			RotateBody(player1->vehicle);
 			RotateBody(player2->vehicle);
+			pb_ball->SetPos(0, 0, 0);
+			pb_ball->Push(0, 0, 0);
+			pb_ball->SetVelocityZero();
 		}
 	}
 
