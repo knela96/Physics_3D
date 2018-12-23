@@ -2,6 +2,7 @@
 #include "Bullet/include/btBulletDynamicsCommon.h"
 #include "PhysVehicle3D.h"
 
+
 // =================================================
 PhysBody3D::PhysBody3D(btRigidBody* body) : body(body)
 {
@@ -69,6 +70,5 @@ void PhysBody3D::SetVelocityZero()
 	body->setLinearVelocity(vec);
 	body->setAngularVelocity(vec);
 }
-
 
 

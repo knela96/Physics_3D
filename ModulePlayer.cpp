@@ -144,14 +144,29 @@ bool ModulePlayer::CleanUp()
 update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
+	float km = vehicle->GetKmh();
 
 	if((App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && player == PLAYER2))
 	{
-		float km = vehicle->GetKmh();
 		if (km < 0.0f)
-			acceleration = MAX_ACCELERATION * 5; //brake = BRAKE_POWER;
+			acceleration = MAX_ACCELERATION * 10; //brake = BRAKE_POWER;
 		else if(km < 100)
+			acceleration = MAX_ACCELERATION;
+	}
+	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && player == PLAYER2))
+	{
+		if (km > 0.0f)
+			acceleration = -MAX_ACCELERATION * 10;
+		else
+			acceleration = -MAX_ACCELERATION;
+	}
+	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_IDLE && App->input->GetKey(SDL_SCANCODE_UP) == KEY_IDLE && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_S) == KEY_IDLE && App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE && player == PLAYER2)) {
+		if (km > 0.0f)
+			acceleration = -MAX_ACCELERATION;
+		else if (km < 0.0f)
 			acceleration = MAX_ACCELERATION;
 	}
 
@@ -170,16 +185,6 @@ update_status ModulePlayer::Update(float dt)
 			turn -= TURN_DEGREES;
 	}
 
-	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && player == PLAYER2))
-	{
-		float km = vehicle->GetKmh();
-		if( km > 0.0f)
-			brake = BRAKE_POWER;
-		else
-			acceleration = -MAX_ACCELERATION;
-	}
-
 	if ((App->input->GetKey(SDL_SCANCODE_KP_0) == KEY_DOWN && player == PLAYER1) ||
 		(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
 	{
@@ -189,22 +194,39 @@ update_status ModulePlayer::Update(float dt)
 		}
 	}
 
-	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2))
+	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_DOWN && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN && player == PLAYER2) && boost)
 	{
-		float km = vehicle->GetKmh();
-		if (km < 200.0f) {
-			vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 100);
+		timer.Start();
+	}
+
+	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
+		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2) && boost)
+	{
+		if (timer.Read() < 2000) {
+			if (km < 150.0f) {
+				vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
+			}
+		}
+		else {
+			boost = false;
+			timer.Stop();
 		}
 	}
+
+	if (boost)
+		sphere.color = Red;
+	else
+		sphere.color = White;
+
 
 
 
 	position = vehicle->GetPos();
 
-	vehicle->ApplyEngineForce(acceleration);
-	vehicle->Turn(turn);
-	vehicle->Brake(brake);
+	vehicle->ApplyEngineForce(acceleration * dt * 100);
+	vehicle->Turn(turn * dt * 100);
+	vehicle->Brake(brake * dt * 100);
 
 	arrow.SetPos(vehicle->GetPos().x, vehicle->GetPos().y + 2.5, vehicle->GetPos().z);
 

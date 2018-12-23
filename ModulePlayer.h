@@ -43,6 +43,7 @@ public:
 	float acceleration;
 	float brake;
 	PLAYER player;
+	bool boost = false;
 
 	Timer timer;
 };

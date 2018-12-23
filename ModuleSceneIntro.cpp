@@ -40,6 +40,9 @@ bool ModuleSceneIntro::Start()
 
 	player2->Start(0, 0, -95, 0, PLAYER2, Blue);
 
+	player1->vehicle->SetVelocityZero();
+	player2->vehicle->SetVelocityZero();
+
 	createMap();
 	PutSensors();
 	Score();
@@ -127,6 +130,17 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	App->camera2->LookAt(vec3(player2_x, 1, player2_z));
 
+	p2List_item<Boost*>* item;
+	for (item = boosts.getFirst(); item != nullptr; item = item->next) {
+		if (!item->data->active) {
+			if (item->data->time.Read() > 3000) {
+				item->data->active = true;
+				item->data->cylinder->color = Orange;
+				item->data->time.Stop();
+			}
+		}
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -161,6 +175,11 @@ bool ModuleSceneIntro::Draw() {
 	p2List_item<Cylinder*>* item4 = time_list.getFirst();
 	for (int i = 0; i < time_list.count() && item4 != nullptr; item4 = item4->next) {
 		item4->data->Render();
+	}
+
+	p2List_item<Boost*>* boost;
+	for (boost = boosts.getFirst(); boost != nullptr; boost = boost->next) {
+		boost->data->cylinder->Render();
 	}
 
 	return ret;
@@ -219,6 +238,23 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 						}	
 						timer.Start();
 					}
+				}
+			}
+		}
+	}
+
+	p2List_item<Boost*>* item;
+	for (item = boosts.getFirst(); item != nullptr; item = item->next) {
+		if (item->data->active) {
+			if (body1 == item->data->pbody || body2 == item->data->pbody) {
+				item->data->cylinder->color = White;
+				item->data->active = false;
+				item->data->time.Start();
+				if (body1 == player1->vehicle || body2 == player1->vehicle) {
+					player1->boost = true;
+				}
+				if (body1 == player2->vehicle || body2 == player2->vehicle) {
+					player2->boost = true;
 				}
 			}
 		}
@@ -379,7 +415,6 @@ void ModuleSceneIntro::PutSensors()
 	Cube* sensor1 = new Cube(30, 9, 0.1);
 	sensor1->SetPos(0, 4.5, 103);
 	sensor1->color = White;
-	sensors.add(sensor1);
 	goal_player1 = App->physics->AddBody(*sensor1, 0.0f);
 	goal_player1->SetSensors();
 	goal_player1->collision_listeners.add(this);
@@ -387,7 +422,6 @@ void ModuleSceneIntro::PutSensors()
 	Cube* sensor2 = new Cube(30, 9, 0.1);
 	sensor2->SetPos(0, 4.5, -103);
 	sensor2->color = White;
-	sensors.add(sensor2);
 	goal_player2 = App->physics->AddBody(*sensor2, 0.0f);
 	goal_player2->SetSensors();
 	goal_player2->collision_listeners.add(this);
@@ -398,14 +432,21 @@ void ModuleSceneIntro::PutSensors()
 }
 
 void ModuleSceneIntro::createBoost(vec3 pos, float radius, float height) {
-	Cylinder* boost = new Cylinder(radius, height);
-	boost->SetPos(pos.x, pos.y, pos.z);
-	boost->SetRotation(90, vec3(0, 0, 1));
-	boost->color = Green;
-	sensors.add(boost);
-	boosts.add(App->physics->AddBody(*boost, 0.0f));
-	boosts.getLast()->data->SetSensors();
-	boosts.getLast()->data->collision_listeners.add(this);
+	Cylinder* cylinder = new Cylinder(radius, height);
+	cylinder->SetPos(pos.x, pos.y, pos.z);
+	cylinder->SetRotation(90, vec3(0, 0, 1));
+	cylinder->color = Orange;
+
+	PhysBody3D* body = App->physics->AddBody(*cylinder, 0.0f);
+	body->SetSensors();
+	body->collision_listeners.add(this);
+
+	Boost* boost = new Boost();
+	boost->active = true;
+	boost->cylinder = cylinder;
+	boost->pbody = body;
+
+	boosts.add(boost);
 }
 
 void ModuleSceneIntro::RotateBody(PhysVehicle3D * vehicle)

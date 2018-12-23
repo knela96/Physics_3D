@@ -12,8 +12,9 @@
 struct PhysBody3D;
 struct PhysMotor3D;
 
-struct Boosts {
-	p2List<PhysBody3D*> boosts;
+struct Boost {
+	PhysBody3D* pbody;
+	Cylinder* cylinder;
 	bool active;
 	Timer time;
 };
@@ -51,13 +52,12 @@ public:
 	PhysBody3D* goal_player1;
 	PhysBody3D* goal_player2;
 
-	p2List<PhysBody3D*> boosts;
+	p2List<Boost*> boosts;
 
 	ModulePlayer* player1;
 	ModulePlayer* player2;
 
 	p2List<Primitive*> map;
-	p2List<Primitive*> sensors;
 
 	p2List<Cylinder*> cylinders_list1;
 	p2List<Cylinder*> cylinders_list2;
