@@ -64,6 +64,7 @@ public:
 	ModulePlayer* player2;
 
 	p2List<Primitive*> map;
+	p2List<Primitive*> sensors;
 
 	p2List<Cylinder*> cylinders_list1;
 	p2List<Cylinder*> cylinders_list2;

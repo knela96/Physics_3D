@@ -57,12 +57,16 @@ bool ModulePhysics3D::Start()
 	debug = false;
 	// Big plane as ground
 	{
-		btCollisionShape* colShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+		colShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
 		btDefaultMotionState* myMotionState = new btDefaultMotionState();
+		motions.add(myMotionState);
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(0.0f, myMotionState, colShape);
 
 		btRigidBody* body = new btRigidBody(rbInfo);
+		rigidbodies.add(body);
+
 		world->addRigidBody(body);
+
 	}
 
 	return true;
@@ -170,6 +174,14 @@ bool ModulePhysics3D::CleanUp()
 	
 	constraints.clear();
 
+	for (p2List_item<btRigidBody*>* item = rigidbodies.getFirst(); item; item = item->next)
+	{
+		world->removeRigidBody(item->data);
+		delete item->data;
+	}
+
+	rigidbodies.clear();
+
 
 	for(p2List_item<btDefaultMotionState*>* item = motions.getFirst(); item; item = item->next)
 		delete item->data;
@@ -186,15 +198,19 @@ bool ModulePhysics3D::CleanUp()
 
 	bodies.clear();
 
+	for (p2List_item<Wheel*>* item = wheels.getFirst(); item; item = item->next)
+		delete[] item->data;
+
+	wheels.clear();
+
 	for(p2List_item<PhysVehicle3D*>* item = vehicles.getFirst(); item; item = item->next)
 		delete item->data;
 
 	vehicles.clear();
 
-
 	delete vehicle_raycaster;
 	delete world;
-	
+	delete colShape;
 
 
 	return true;
@@ -304,6 +320,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	comShape->calculateLocalInertia(info.mass, localInertia);
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	motions.add(myMotionState);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(info.mass, myMotionState, comShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
@@ -331,7 +348,9 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 		btVector3 axis(info.wheels[i].axis.x, info.wheels[i].axis.y, info.wheels[i].axis.z);
 
 		vehicle->addWheel(conn, dir, axis, info.wheels[i].suspensionRestLength, info.wheels[i].radius, tuning, info.wheels[i].front);
+		
 	}
+	wheels.add((Wheel*)info.wheels);
 	// ---------------------
 
 	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);

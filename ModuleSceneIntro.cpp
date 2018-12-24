@@ -104,11 +104,17 @@ bool ModuleSceneIntro::CleanUp()
 		delete item->data;
 	time_list.clear();
 
+	for (p2List_item<Primitive*>* item = sensors.getFirst(); item; item = item->next)
+		delete item->data;
+	sensors.clear();
+
 	player1->CleanUp();
 	player2->CleanUp();
 
 	delete player1;
 	delete player2;
+
+	
 
 
 	return true;
@@ -537,6 +543,7 @@ void ModuleSceneIntro::PutSensors()
 	Cube* sensor1 = new Cube(30, 9, 0.1);
 	sensor1->SetPos(0, 4.5, 103);
 	sensor1->color = White;
+	sensors.add(sensor1);
 	goal_player1 = App->physics->AddBody(*sensor1, 0.0f);
 	goal_player1->SetSensors();
 	goal_player1->collision_listeners.add(this);
@@ -544,6 +551,7 @@ void ModuleSceneIntro::PutSensors()
 	Cube* sensor2 = new Cube(30, 9, 0.1);
 	sensor2->SetPos(0, 4.5, -103);
 	sensor2->color = White;
+	sensors.add(sensor2);
 	goal_player2 = App->physics->AddBody(*sensor2, 0.0f);
 	goal_player2->SetSensors();
 	goal_player2->collision_listeners.add(this);

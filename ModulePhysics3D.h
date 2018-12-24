@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "p2List.h"
 #include "Primitive.h"
+#include "PhysVehicle3D.h"
 
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
@@ -49,12 +50,15 @@ private:
 	btDiscreteDynamicsWorld*			world;
 	btDefaultVehicleRaycaster*			vehicle_raycaster;
 	DebugDrawer*						debug_draw;
+	btCollisionShape*					colShape;
 
 	p2List<btCollisionShape*> shapes;
 	p2List<PhysBody3D*> bodies;
 	p2List<btDefaultMotionState*> motions;
 	p2List<btTypedConstraint*> constraints;
 	p2List<PhysVehicle3D*> vehicles;
+	p2List<btRigidBody*> rigidbodies;
+	p2List<Wheel*> wheels;
 };
 
 class DebugDrawer : public btIDebugDraw
