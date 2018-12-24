@@ -665,6 +665,10 @@ void ModuleSceneIntro::RestartPositions()
 	player2->vehicle->SetVelocityZero();
 	player1->boost = false;
 	player2->boost = false;
+	player1->cable->SetPos(player1->initialPosition.x, player1->initialPosition.y + 2, player1->initialPosition.z);
+	player2->cable->SetPos(player2->initialPosition.x, player2->initialPosition.y + 2, player2->initialPosition.z);
+	player1->ball->SetPos(player1->initialPosition.x, player1->initialPosition.y + 2, player1->initialPosition.z);
+	player2->ball->SetPos(player2->initialPosition.x, player2->initialPosition.y + 2, player2->initialPosition.z);
 }
 
 Boost::~Boost()
