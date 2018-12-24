@@ -76,7 +76,7 @@ public:
 	Uint32 time_remaining;
 	Uint32 time_spend = 0;
 
-	uint interval = 6000;
+	uint interval = 60000;
 	uint counter = interval;
 
 	bool goal = false;
