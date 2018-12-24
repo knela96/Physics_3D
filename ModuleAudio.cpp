@@ -35,7 +35,7 @@ bool ModuleAudio::Init()
 	}
 
 	//Initialize SDL_mixer
-	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // 22050, MIX_DEFAULT_FORMAT, 8, 4096  or 44100, MIX_DEFAULT_FORMAT, 2, 2048
 	{
 		LOG("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		ret = false;

@@ -51,7 +51,7 @@ bool ModuleSceneIntro::Start()
 	ball.radius = 2;
 	ball.color = White;
 
-	pb_ball = App->physics->AddBody(ball, 0.5f);
+	pb_ball = App->physics->AddBody(ball, 0.01f);
 	pb_ball->GetTransform(&ball.transform);
 	pb_ball->SetPos(0, 2, 0);	
 	
@@ -63,8 +63,35 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+
+	pb_ball = nullptr;
+	goal_player1 = nullptr;
+	goal_player2 = nullptr;
+
+	for (p2List_item<Boost*>* item = boosts.getFirst(); item; item = item->next)
+		delete item->data;
+	boosts.clear();
+
+	for (p2List_item<Primitive*>* item = map.getFirst(); item; item = item->next)
+		delete item->data;
+	map.clear();
+
+	for (p2List_item<Cylinder*>* item = cylinders_list1.getFirst(); item; item = item->next)
+		delete item->data;
+	cylinders_list1.clear();
+
+	for (p2List_item<Cylinder*>* item = cylinders_list2.getFirst(); item; item = item->next)
+		delete item->data;
+	cylinders_list2.clear();
+
+	for (p2List_item<Cylinder*>* item = time_list.getFirst(); item; item = item->next)
+		delete item->data;
+	time_list.clear();
+
 	player1->CleanUp();
 	player2->CleanUp();
+
+
 	return true;
 }
 
@@ -415,7 +442,7 @@ void ModuleSceneIntro::createMap()
 	//GoalTop
 	p = new Cube(30, 0.1, -12);
 	p->color = Blue;
-	p->SetPos(0, 9, 106);
+	p->SetPos(0, 9, -106);
 	map.add(p);
 	App->physics->AddBody(*p, 0.0f);
 
@@ -554,3 +581,8 @@ void ModuleSceneIntro::RestartPositions()
 	player2->boost = false;
 }
 
+Boost::~Boost()
+{
+	pbody = nullptr;
+	delete cylinder;
+}

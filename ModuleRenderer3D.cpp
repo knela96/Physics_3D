@@ -82,6 +82,7 @@ bool ModuleRenderer3D::Init()
 		lights[0].diffuse.Set(0.75f, 0.75f, 0.75f, 1.0f);
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
+
 		
 		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
@@ -141,6 +142,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 			// light 0 on cam pos
 			lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 		}
+
 
 		for (uint i = 0; i < MAX_LIGHTS; ++i)
 			lights[i].Render();

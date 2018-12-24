@@ -137,6 +137,9 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color
 bool ModulePlayer::CleanUp()
 {
 	LOG("Unloading player");
+	ball = nullptr;
+	cable = nullptr;
+	vehicle = nullptr;
 
 	return true;
 }
@@ -229,14 +232,11 @@ update_status ModulePlayer::Update(float dt)
 	else
 		sphere.color = White;
 
-
-
+	vehicle->ApplyEngineForce(acceleration);
+	vehicle->Turn(turn);
+	vehicle->Brake(brake);
 
 	position = vehicle->GetPos();
-
-	vehicle->ApplyEngineForce(acceleration * dt * 100);
-	vehicle->Turn(turn * dt * 100);
-	vehicle->Brake(brake * dt * 100);
 
 	arrow.SetPos(vehicle->GetPos().x, vehicle->GetPos().y + 2.5, vehicle->GetPos().z);
 
@@ -272,6 +272,7 @@ update_status ModulePlayer::Update(float dt)
 
 bool ModulePlayer::Draw() {
 	vehicle->Render();
+	//arrow.Render();
 
 	ball->GetTransform(&sphere.transform);
 

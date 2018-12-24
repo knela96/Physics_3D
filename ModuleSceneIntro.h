@@ -13,6 +13,8 @@ struct PhysBody3D;
 struct PhysMotor3D;
 
 struct Boost {
+	~Boost();
+
 	PhysBody3D* pbody;
 	Cylinder* cylinder;
 	bool active;

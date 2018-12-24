@@ -12,6 +12,12 @@ PhysBody3D::PhysBody3D(btRigidBody* body) : body(body)
 // ---------------------------------------------------------
 PhysBody3D::~PhysBody3D()
 {
+	for (p2List_item<Module*>* item = collision_listeners.getFirst(); item; item = item->next)
+	{
+		item->data = nullptr;
+	}
+	collision_listeners.clear();
+
 	delete body;
 }
 
