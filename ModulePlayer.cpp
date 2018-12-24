@@ -247,7 +247,13 @@ update_status ModulePlayer::Update(float dt)
 				timer.Start();
 			else
 				timer.Resume();
-			App->audio->PlayFx(BOOST);
+			
+			if (App->audio->playingFX(3) && player == PLAYER1) {
+				App->audio->PlayFx(BOOST, 0, 3);
+			}
+			if (App->audio->playingFX(4) && player == PLAYER2) {
+				App->audio->PlayFx(BOOST, 0, 4);
+			}
 		}
 
 		if (((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
@@ -256,6 +262,12 @@ update_status ModulePlayer::Update(float dt)
 			if (timer.Read() < 2000 && timer.Read() != 0) {
 				if (km < 150.0f) {
 					vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
+				}
+				if (!App->audio->playingFX(3) && player == PLAYER1) {
+					App->audio->PlayFx(BOOST, 0, 3);
+				}
+				if (!App->audio->playingFX(4) && player == PLAYER2) {
+					App->audio->PlayFx(BOOST, 0, 4);
 				}
 			}
 			else {

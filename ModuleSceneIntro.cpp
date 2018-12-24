@@ -31,6 +31,7 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 	App->audio->PlayMusic("Music/song.wav");
+	App->audio->ChangeMusicVolume(0.6f);
 	App->audio->LoadFx("FX/car2.ogg");
 	App->audio->LoadFx("FX/car3.ogg");
 	App->audio->LoadFx("FX/car_idle1.ogg");
@@ -368,9 +369,6 @@ void ModuleSceneIntro::startRound() {
 		second = 0;
 	}
 }
-
-
-
 
 void ModuleSceneIntro::createMap()
 {

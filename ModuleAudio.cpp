@@ -168,13 +168,13 @@ void ModuleAudio::StopFx(int channel) {
 	Mix_HaltChannel(channel);
 }
 
-/*void ModuleAudio::ChangeMusicVolume() {
+void ModuleAudio::ChangeMusicVolume(float v_music) {
 	Mix_VolumeMusic(MIX_MAX_VOLUME - (MIX_MAX_VOLUME - (int)(v_music * MIX_MAX_VOLUME)));
 }
 
-void ModuleAudio::ChangeFxVolume(Mix_Chunk* fx) {
+void ModuleAudio::ChangeFxVolume(Mix_Chunk* fx, float v_fx) {
 	Mix_VolumeChunk(fx, MIX_MAX_VOLUME - (MIX_MAX_VOLUME - (int)(v_fx * MIX_MAX_VOLUME)));
-}*/
+}
 
 void ModuleAudio::UnloadFx() {
 	p2List_item<Mix_Chunk*>* item;
