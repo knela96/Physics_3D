@@ -18,6 +18,8 @@ enum effects {
 	BOOST,
 	TICK,
 	GO,
+	WHISTLE,
+	GOAL,
 
 };
 
