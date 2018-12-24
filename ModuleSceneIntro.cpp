@@ -43,6 +43,7 @@ bool ModuleSceneIntro::Start()
 	App->audio->LoadFx("FX/boost.ogg");
 	App->audio->LoadFx("FX/tick.ogg");
 	App->audio->LoadFx("FX/go.ogg");
+	App->audio->LoadFx("FX/whistle.ogg");
 
 	player1 = new ModulePlayer(App, true);
 	player2 = new ModulePlayer(App, true);
@@ -128,6 +129,7 @@ update_status ModuleSceneIntro::Update(float dt)
 					item->next->data->color = Red;
 					endGame = true;
 					interval = counter;
+					App->audio->PlayFx(WHISTLE);
 					time_left.Start();
 				}
 
@@ -324,13 +326,13 @@ void ModuleSceneIntro::resetLevel() {
 			item->data->color = Black;
 		}
 
-		p2List_item<Cylinder*>* item2 = cylinders_list1.getFirst();
-		for (int i = 0; i < cylinders_list1.count() && item2 != nullptr; item2 = item2->next) {
+		
+		for (p2List_item<Cylinder*>* item2 = cylinders_list1.getFirst(); item2 != nullptr; item2 = item2->next) {
 			item2->data->color = White;
 		}
 
-		p2List_item<Cylinder*>* item3 = cylinders_list2.getFirst();
-		for (int i = 0; i < cylinders_list2.count() && item3 != nullptr; item3 = item3->next) {
+		
+		for (p2List_item<Cylinder*>* item3 = cylinders_list2.getFirst(); item3 != nullptr; item3 = item3->next) {
 			item3->data->color = White;
 		}
 

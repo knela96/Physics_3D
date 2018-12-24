@@ -166,8 +166,13 @@ update_status ModulePlayer::Update(float dt)
 
 			if (km < 0.0f)
 				acceleration = MAX_ACCELERATION * 10; //brake = BRAKE_POWER;
-			else if (km < 100)
-				acceleration = MAX_ACCELERATION;
+			else if (km < 120)
+				acceleration = MAX_ACCELERATION * 2;
+
+			if (km > 120 && !boosting) {
+				acceleration = -MAX_ACCELERATION * 2;
+			}
+
 		}
 		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_UP && player == PLAYER1) ||
 			(App->input->GetKey(SDL_SCANCODE_W) == KEY_UP && player == PLAYER2)) {
@@ -194,7 +199,7 @@ update_status ModulePlayer::Update(float dt)
 			if (km > 0.0f)
 				acceleration = -MAX_ACCELERATION * 10;
 			else
-				acceleration = -MAX_ACCELERATION;
+				acceleration = -MAX_ACCELERATION * 2;
 		}
 		if (((App->input->GetKey(SDL_SCANCODE_DOWN) == App->input->GetKey(SDL_SCANCODE_UP)) && player == PLAYER1) ||
 			((App->input->GetKey(SDL_SCANCODE_S) == App->input->GetKey(SDL_SCANCODE_W)) && player == PLAYER2)) {
@@ -260,7 +265,7 @@ update_status ModulePlayer::Update(float dt)
 			(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2)) && boost)
 		{
 			if (timer.Read() < 2000 && timer.Read() != 0) {
-				if (km < 150.0f) {
+				if (km < 170.0f) {
 					vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
 				}
 				if (!App->audio->playingFX(3) && player == PLAYER1) {
@@ -269,9 +274,11 @@ update_status ModulePlayer::Update(float dt)
 				if (!App->audio->playingFX(4) && player == PLAYER2) {
 					App->audio->PlayFx(BOOST, 0, 4);
 				}
+				boosting = true;
 			}
 			else {
 				boost = false;
+				boosting = false;
 				timer.Stop();
 			}
 		}
@@ -280,6 +287,7 @@ update_status ModulePlayer::Update(float dt)
 			(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && player == PLAYER2) && boost)
 		{
 			timer.Stop();
+			boosting = false;
 		}
 	}
 

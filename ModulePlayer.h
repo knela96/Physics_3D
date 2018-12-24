@@ -44,6 +44,7 @@ public:
 	float brake;
 	PLAYER player;
 	bool boost = false;
+	bool boosting = false;
 
 	Timer timer;
 	Timer timer2;
