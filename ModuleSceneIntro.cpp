@@ -45,7 +45,6 @@ bool ModuleSceneIntro::Start()
 	App->audio->LoadFx("FX/go.ogg");
 	App->audio->LoadFx("FX/whistle.ogg");
 	App->audio->LoadFx("FX/goal.ogg");
-	App->audio->LoadFx("FX/goal.ogg");
 
 	player1 = new ModulePlayer(App, true);
 	player2 = new ModulePlayer(App, true);
@@ -249,7 +248,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					}
 					else if(item->next->next == nullptr)
 					{
-						App->audio->PlayFx(GOAL);
+						App->audio->PlayFx(WHISTLE);
 						item->next->data->color = Green;
 						endGame = true;
 						time_left.Start();
