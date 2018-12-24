@@ -6,6 +6,21 @@
 
 #define DEFAULT_MUSIC_FADE_TIME 2.0f
 
+enum effects {
+	CAR1 = 1,
+	CAR2,
+	CAR_IDLE1,
+	CAR_IDLE2,
+	CAR_BACK1,
+	CAR_BACK2,
+	POWERUP,
+	JUMP,
+	BOOST,
+	TICK,
+	GO,
+
+};
+
 class ModuleAudio : public Module
 {
 public:
@@ -23,7 +38,15 @@ public:
 	unsigned int LoadFx(const char* path);
 
 	// Play a previously loaded WAV
-	bool PlayFx(unsigned int fx, int repeat = 0);
+	bool PlayFx(unsigned int fx, int repeat = 0, int channel = -1);
+
+	bool playingFX(int channel);
+
+	void StopMusic();
+
+	void StopFx(int channel = -1);
+
+	void UnloadFx();
 
 private:
 

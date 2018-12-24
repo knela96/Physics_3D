@@ -140,7 +140,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 }
 
 // Play WAV
-bool ModuleAudio::PlayFx(unsigned int id, int repeat)
+bool ModuleAudio::PlayFx(unsigned int id, int repeat,int channel)
 {
 	bool ret = false;
 
@@ -148,9 +148,37 @@ bool ModuleAudio::PlayFx(unsigned int id, int repeat)
 	
 	if(fx.at(id-1, chunk) == true)
 	{
-		Mix_PlayChannel(-1, chunk, repeat);
+		Mix_PlayChannel(channel, chunk, repeat);
+
 		ret = true;
 	}
 
 	return ret;
+}
+
+bool ModuleAudio::playingFX(int channel) {
+	return Mix_Playing(channel);
+}
+
+void ModuleAudio::StopMusic() {
+	Mix_HaltMusic();
+}
+
+void ModuleAudio::StopFx(int channel) {
+	Mix_HaltChannel(channel);
+}
+
+/*void ModuleAudio::ChangeMusicVolume() {
+	Mix_VolumeMusic(MIX_MAX_VOLUME - (MIX_MAX_VOLUME - (int)(v_music * MIX_MAX_VOLUME)));
+}
+
+void ModuleAudio::ChangeFxVolume(Mix_Chunk* fx) {
+	Mix_VolumeChunk(fx, MIX_MAX_VOLUME - (MIX_MAX_VOLUME - (int)(v_fx * MIX_MAX_VOLUME)));
+}*/
+
+void ModuleAudio::UnloadFx() {
+	p2List_item<Mix_Chunk*>* item;
+	for (item = fx.getFirst(); item != NULL; item = item->next)
+		Mix_FreeChunk(item->data);
+	fx.clear();
 }

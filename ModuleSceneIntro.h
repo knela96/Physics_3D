@@ -34,6 +34,10 @@ public:
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
+	void resetLevel();
+
+	void startRound();
+
 	void createMap();
 	void PutSensors();
 
@@ -67,12 +71,21 @@ public:
 
 	Timer timer;
 	Timer time_left;
+	Timer delay;
 	Uint32 time = 0;
 	Uint32 time_remaining;
 	Uint32 time_spend = 0;
 
-	int interval = 60000;
-	int counter = interval;
+	uint interval = 60000;
+	uint counter = interval;
 
 	bool goal = false;
+	bool endGame = false;
+	bool start = false;
+
+private:
+	uint score1 = 0;
+	uint score2 = 0;
+	int second = 0;
+
 };

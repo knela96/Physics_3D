@@ -107,6 +107,7 @@ bool ModulePlayer::Start(int x, int y, int z, float angle, PLAYER p, Color color
 
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(x, y, z);
+	vehicle->SetVelocityZero();
 	position = vehicle->GetPos();
 
 
@@ -149,82 +150,125 @@ update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
 	float km = vehicle->GetKmh();
+	if (!App->scene_intro->start) {
+		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && player == PLAYER2))
+		{
+			if (!App->audio->playingFX(CAR1) && player == PLAYER1) {
+				App->audio->StopFx(3);
+				App->audio->PlayFx(CAR1, 1, 1);
+			}
 
-	if((App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT && player == PLAYER2))
-	{
-		if (km < 0.0f)
-			acceleration = MAX_ACCELERATION * 10; //brake = BRAKE_POWER;
-		else if(km < 100)
-			acceleration = MAX_ACCELERATION;
-	}
-	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && player == PLAYER2))
-	{
-		if (km > 0.0f)
-			acceleration = -MAX_ACCELERATION * 10;
-		else
-			acceleration = -MAX_ACCELERATION;
-	}
-	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_IDLE && App->input->GetKey(SDL_SCANCODE_UP) == KEY_IDLE && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_S) == KEY_IDLE && App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE && player == PLAYER2)) {
-		if (km > 0.0f)
-			acceleration = -MAX_ACCELERATION;
-		else if (km < 0.0f)
-			acceleration = MAX_ACCELERATION;
-	}
+			if (!App->audio->playingFX(CAR2) && player == PLAYER2) {
+				App->audio->StopFx(4);
+				App->audio->PlayFx(CAR2, 1, 2);
+			}
 
-	if ((App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && player == PLAYER2))
-	{
-		if(turn < TURN_DEGREES)
-			turn +=  TURN_DEGREES;
-	
-	}
-
-	if ((App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && player == PLAYER2))
-	{
-		if(turn > -TURN_DEGREES)
-			turn -= TURN_DEGREES;
-	}
-
-	if ((App->input->GetKey(SDL_SCANCODE_KP_0) == KEY_DOWN && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
-	{
-		if (timer2.Read() > 1500) {
-			timer2.Start();
-			vehicle->Push(0, 5000, 0);
+			if (km < 0.0f)
+				acceleration = MAX_ACCELERATION * 10; //brake = BRAKE_POWER;
+			else if (km < 100)
+				acceleration = MAX_ACCELERATION;
 		}
-	}
+		if ((App->input->GetKey(SDL_SCANCODE_UP) == KEY_UP && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_W) == KEY_UP && player == PLAYER2)) {
 
-	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_DOWN && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN && player == PLAYER2) && boost)
-	{
-		if(timer.Read() >= 2000)
-			timer.Start();
-		else
-			timer.Resume();
-	}
+			if (player == PLAYER1)
+				App->audio->StopFx(1);
+			if (player == PLAYER2)
+				App->audio->StopFx(2);
+		}
 
-	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2) && boost)
-	{
-		if (timer.Read() < 2000 && timer.Read() != 0) {
-			if (km < 150.0f) {
-				vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
+		if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT && player == PLAYER2))
+		{
+			if (App->audio->playingFX(3) && player == PLAYER1) {
+				App->audio->StopFx(3);
+				App->audio->PlayFx(CAR_BACK1, 1, 1);
+			}
+
+			if (App->audio->playingFX(4) && player == PLAYER2) {
+				App->audio->StopFx(4);
+				App->audio->PlayFx(CAR_BACK2, 1, 2);
+			}
+
+			if (km > 0.0f)
+				acceleration = -MAX_ACCELERATION * 10;
+			else
+				acceleration = -MAX_ACCELERATION;
+		}
+		if (((App->input->GetKey(SDL_SCANCODE_DOWN) == App->input->GetKey(SDL_SCANCODE_UP)) && player == PLAYER1) ||
+			((App->input->GetKey(SDL_SCANCODE_S) == App->input->GetKey(SDL_SCANCODE_W)) && player == PLAYER2)) {
+
+			if (!App->audio->playingFX(3) && player == PLAYER1) {
+				App->audio->StopFx(1);
+				App->audio->PlayFx(CAR_IDLE1, 1, 3);
+			}
+
+			if (!App->audio->playingFX(4) && player == PLAYER2) {
+				App->audio->StopFx(2);
+				App->audio->PlayFx(CAR_IDLE2, 1, 4);
+			}
+
+			if (km > 0.0f)
+				acceleration = -MAX_ACCELERATION;
+			else if (km < 0.0f)
+				acceleration = MAX_ACCELERATION;
+		}
+
+		if ((App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && player == PLAYER2))
+		{
+			if (turn < TURN_DEGREES)
+				turn += TURN_DEGREES;
+
+		}
+
+		if ((App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && player == PLAYER2))
+		{
+			if (turn > -TURN_DEGREES)
+				turn -= TURN_DEGREES;
+		}
+
+		if ((App->input->GetKey(SDL_SCANCODE_KP_0) == KEY_DOWN && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && player == PLAYER2))
+		{
+			if (timer2.Read() > 1500) {
+				App->audio->PlayFx(JUMP);
+				timer2.Start();
+				vehicle->Push(0, 5000, 0);
 			}
 		}
-		else {
-			boost = false;
+
+		if (((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_DOWN && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_DOWN && player == PLAYER2)) && boost)
+		{
+			if (timer.Read() >= 2000)
+				timer.Start();
+			else
+				timer.Resume();
+			App->audio->PlayFx(BOOST);
+		}
+
+		if (((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_REPEAT && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT && player == PLAYER2)) && boost)
+		{
+			if (timer.Read() < 2000 && timer.Read() != 0) {
+				if (km < 150.0f) {
+					vehicle->Push(0, 0, vehicle->vehicle->getForwardVector().getZ() * 300);
+				}
+			}
+			else {
+				boost = false;
+				timer.Stop();
+			}
+		}
+
+		if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_UP && player == PLAYER1) ||
+			(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && player == PLAYER2) && boost)
+		{
 			timer.Stop();
 		}
-	}
-
-	if ((App->input->GetKey(SDL_SCANCODE_RSHIFT) == KEY_UP && player == PLAYER1) ||
-		(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_UP && player == PLAYER2) && boost)
-	{
-		timer.Stop();
 	}
 
 	if (boost)

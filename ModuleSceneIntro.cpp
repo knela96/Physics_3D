@@ -30,11 +30,21 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	App->audio->PlayMusic("Music/song.wav");
+	App->audio->LoadFx("FX/car2.ogg");
+	App->audio->LoadFx("FX/car3.ogg");
+	App->audio->LoadFx("FX/car_idle1.ogg");
+	App->audio->LoadFx("FX/car_idle2.ogg");
+	App->audio->LoadFx("FX/car_back1.ogg");
+	App->audio->LoadFx("FX/car_back2.ogg");
+	App->audio->LoadFx("FX/powerup.ogg");
+	App->audio->LoadFx("FX/jump.ogg");
+	App->audio->LoadFx("FX/boost.ogg");
+	App->audio->LoadFx("FX/tick.ogg");
+	App->audio->LoadFx("FX/go.ogg");
+
 	player1 = new ModulePlayer(App, true);
 	player2 = new ModulePlayer(App, true);
-
-	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
-	App->camera->LookAt(vec3(0, 0, 0));
 
 	player1->Start(0, 0, 95, 3.14, PLAYER1, Orange);
 
@@ -53,9 +63,12 @@ bool ModuleSceneIntro::Start()
 
 	pb_ball = App->physics->AddBody(ball, 0.01f);
 	pb_ball->GetTransform(&ball.transform);
-	pb_ball->SetPos(0, 2, 0);	
-	
+	pb_ball->SetPos(0, 2, 0);
+
 	time_left.Start();
+	endGame = false;
+	start = true;
+
 	return ret;
 }
 
@@ -98,41 +111,28 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	time_remaining = time_left.Read();
-	
-	LOG("time remaining: %d", time_remaining);
-	if (time_remaining >= interval && time_remaining != 0)
-	{
-		p2List_item<Cylinder*>* item = time_list.getFirst();
-		for (int i = 0; i < time_list.count() && item->next != nullptr; item = item->next) {
-			if (item->data->color.IsBlack())
-			{
-				item->data->color = Red;
-				break;
+	if (!endGame) {
+		time_remaining = time_left.Read();
+		if (time_remaining >= interval && time_remaining != 0)
+		{
+			p2List_item<Cylinder*>* item = time_list.getFirst();
+			for (int i = 0; i < time_list.count() && item->next != nullptr; item = item->next) {
+				if (item->data->color.IsBlack())
+				{
+					item->data->color = Red;
+					break;
+				}
+				else if (item->next->next == nullptr)
+				{
+					item->next->data->color = Red;
+					endGame = true;
+					interval = counter;
+					time_left.Start();
+				}
+
 			}
-			else if (item->next->next == nullptr)
-			{
-				p2List_item<Cylinder*>* item = time_list.getFirst();
-				for (int i = 0; i < time_list.count() && item != nullptr; item = item->next) {
-					item->data->color = Black;
-				}
-
-				p2List_item<Cylinder*>* item2 = cylinders_list1.getFirst();
-				for (int i = 0; i < cylinders_list1.count() && item2 != nullptr; item2 = item2->next) {
-					item2->data->color = White;
-				}
-
-				p2List_item<Cylinder*>* item3 = cylinders_list2.getFirst();
-				for (int i = 0; i < cylinders_list2.count() && item3 != nullptr; item3 = item3->next) {
-					item3->data->color = White;
-				}
-
-				RestartPositions();
-				//time_spend = time_left.Read();
-			}
-			
+			interval += counter;
 		}
-		interval += counter;
 	}
 
 	player1->Update(dt);
@@ -168,6 +168,11 @@ update_status ModuleSceneIntro::Update(float dt)
 			}
 		}
 	}
+	
+	if (endGame && !start)
+		resetLevel();
+	else if(!endGame && start)
+		startRound();
 
 	return UPDATE_CONTINUE;
 }
@@ -217,13 +222,16 @@ bool ModuleSceneIntro::Draw() {
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	time = timer.Read();
-	if (time >= 1000)
+	if (time >= 1000 && !endGame)
 	{
 		if (body1 == goal_player1)
 		{
 			if (body2 == pb_ball)
 			{
-				RestartPositions();
+				if (score2 < 4) {
+					RestartPositions();
+					start = true;
+				}
 
 				p2List_item<Cylinder*>* item = cylinders_list1.getFirst();
 				for (int i = 0; i < cylinders_list1.count() && item->next != nullptr; item = item->next) {
@@ -235,18 +243,11 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					}
 					else if(item->next->next == nullptr)
 					{
-						p2List_item<Cylinder*>* item = cylinders_list1.getFirst();
-						for (int i = 0; i < cylinders_list1.count() && item != nullptr; item = item->next) {
-							item->data->color = White;
-						}
-						timer.Start();
+						item->next->data->color = Green;
+						endGame = true;
 						time_left.Start();
-						interval = counter;
-						p2List_item<Cylinder*>* item2 = time_list.getFirst();
-						for (int i = 0; i < time_list.count() && item2 != nullptr; item2 = item2->next) {
-							item2->data->color = Black;
-						}
 					}
+					score2++;
 				}
 			}
 		}
@@ -254,7 +255,10 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		{
 			if (body2 == pb_ball)
 			{
-				RestartPositions();
+				if (score1 < 4) {
+					RestartPositions();
+					start = true;
+				}
 
 				p2List_item<Cylinder*>* item = cylinders_list2.getFirst();
 				for (int i = 0; i < cylinders_list2.count() && item != nullptr; item = item->next) {
@@ -264,20 +268,13 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 						timer.Start();
 						break;
 					}
-					else if (item->next->data == nullptr)
+					else if (item->next->next == nullptr)
 					{
-						p2List_item<Cylinder*>* item = cylinders_list2.getFirst();
-						for (int i = 0; i < cylinders_list2.count() && item != nullptr; item = item->next) {
-							item->data->color = White;
-						}	
-						timer.Start();
+						item->data->color = Green;
+						endGame = true;
 						time_left.Start();
-						interval = counter;
-						p2List_item<Cylinder*>* item2 = time_list.getFirst();
-						for (int i = 0; i < time_list.count() && item2 != nullptr; item2 = item2->next) {
-							item2->data->color = Black;
-						}
 					}
+					score1++;
 				}
 			}
 		}
@@ -288,6 +285,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		if (item->data->active) {
 			if (body1 == item->data->pbody || body2 == item->data->pbody) {
 				item->data->cylinder->color = White;
+				App->audio->PlayFx(POWERUP);
 				item->data->active = false;
 				item->data->time.Start();
 				if (body1 == player1->vehicle || body2 == player1->vehicle) {
@@ -305,6 +303,74 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 	}
 	
 }
+
+
+
+void ModuleSceneIntro::resetLevel() {
+	if (time_left.Read() < 5000) {
+		for (p2List_item<Primitive*>* item = map.getFirst(); item != nullptr; item = item->next) {
+			if(score1 > score2)
+				item->data->color = Orange;
+			else if(score2 > score1)
+				item->data->color = Blue;
+			else if(score1 == score2)
+				item->data->color = White;
+		}
+	}
+	else {
+		
+		for (p2List_item<Cylinder*>* item = time_list.getFirst(); item != nullptr; item = item->next) {
+			item->data->color = Black;
+		}
+
+		p2List_item<Cylinder*>* item2 = cylinders_list1.getFirst();
+		for (int i = 0; i < cylinders_list1.count() && item2 != nullptr; item2 = item2->next) {
+			item2->data->color = White;
+		}
+
+		p2List_item<Cylinder*>* item3 = cylinders_list2.getFirst();
+		for (int i = 0; i < cylinders_list2.count() && item3 != nullptr; item3 = item3->next) {
+			item3->data->color = White;
+		}
+
+		p2List_item<Primitive*>* item4 = map.getFirst();
+		for (int i = 0; i < map.count() && item4 != nullptr; item4 = item4->next, ++i) {
+			if(i < map.count()/2)
+				item4->data->color = Orange;
+			else
+				item4->data->color = Blue;
+		}
+		score1 = 0;
+		score2 = 0;
+		interval = counter;
+		RestartPositions();
+		time_left.Start();
+		endGame = false;
+		start = true;
+	}
+}
+
+void ModuleSceneIntro::startRound() {
+	uint res = time_left.Read();
+	LOG("%i", res);
+	if (res >= 1000) {
+		second++;
+		time_left.Start();
+	}
+
+	if ((second == 1 || second == 2) && res >= 1000) {
+		App->audio->PlayFx(TICK);
+	}
+	else if (second == 3 && res >= 1000) {
+		App->audio->PlayFx(GO);
+		endGame = false;
+		start = false;
+		second = 0;
+	}
+}
+
+
+
 
 void ModuleSceneIntro::createMap()
 {
