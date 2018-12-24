@@ -44,6 +44,8 @@ bool ModuleSceneIntro::Start()
 	App->audio->LoadFx("FX/tick.ogg");
 	App->audio->LoadFx("FX/go.ogg");
 	App->audio->LoadFx("FX/whistle.ogg");
+	App->audio->LoadFx("FX/goal.ogg");
+	App->audio->LoadFx("FX/goal.ogg");
 
 	player1 = new ModulePlayer(App, true);
 	player2 = new ModulePlayer(App, true);
@@ -232,6 +234,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			if (body2 == pb_ball)
 			{
 				if (score2 < 4) {
+					App->audio->PlayFx(GOAL);
 					RestartPositions();
 					start = true;
 				}
@@ -246,6 +249,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					}
 					else if(item->next->next == nullptr)
 					{
+						App->audio->PlayFx(GOAL);
 						item->next->data->color = Green;
 						endGame = true;
 						time_left.Start();
@@ -259,6 +263,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 			if (body2 == pb_ball)
 			{
 				if (score1 < 4) {
+					App->audio->PlayFx(GOAL);
 					RestartPositions();
 					start = true;
 				}
@@ -273,6 +278,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					}
 					else if (item->next->next == nullptr)
 					{
+						App->audio->PlayFx(GOAL);
 						item->data->color = Green;
 						endGame = true;
 						time_left.Start();

@@ -19,6 +19,7 @@ enum effects {
 	TICK,
 	GO,
 	WHISTLE,
+	GOAL,
 };
 
 class ModuleAudio : public Module
