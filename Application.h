@@ -24,7 +24,6 @@ public:
 	ModuleCamera3D* camera;
 	ModuleCamera3D* camera2;
 	ModulePhysics3D* physics;
-	ModulePlayer* player;
 
 private:
 

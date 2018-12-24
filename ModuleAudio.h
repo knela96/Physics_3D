@@ -51,7 +51,6 @@ public:
 
 	void ChangeFxVolume(Mix_Chunk * fx, float v_fx);
 
-	void UnloadFx();
 
 private:
 

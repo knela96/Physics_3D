@@ -107,6 +107,9 @@ bool ModuleSceneIntro::CleanUp()
 	player1->CleanUp();
 	player2->CleanUp();
 
+	delete player1;
+	delete player2;
+
 
 	return true;
 }
@@ -177,6 +180,10 @@ update_status ModuleSceneIntro::Update(float dt)
 		resetLevel();
 	else if(!endGame && start)
 		startRound();
+	
+	char title[80];
+	sprintf_s(title, "Radio Control League");
+	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
 }

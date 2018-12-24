@@ -58,7 +58,6 @@ bool ModulePhysics3D::Start()
 	// Big plane as ground
 	{
 		btCollisionShape* colShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-
 		btDefaultMotionState* myMotionState = new btDefaultMotionState();
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(0.0f, myMotionState, colShape);
 
@@ -171,6 +170,7 @@ bool ModulePhysics3D::CleanUp()
 	
 	constraints.clear();
 
+
 	for(p2List_item<btDefaultMotionState*>* item = motions.getFirst(); item; item = item->next)
 		delete item->data;
 
@@ -191,10 +191,9 @@ bool ModulePhysics3D::CleanUp()
 
 	vehicles.clear();
 
+
 	delete vehicle_raycaster;
 	delete world;
-
-
 	
 
 
