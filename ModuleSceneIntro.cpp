@@ -30,21 +30,21 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	App->audio->PlayMusic("Music/song.wav");
+	App->audio->PlayMusic("Music/song.ogg");
 	App->audio->ChangeMusicVolume(0.6f);
-	App->audio->LoadFx("FX/car2.ogg");
-	App->audio->LoadFx("FX/car3.ogg");
-	App->audio->LoadFx("FX/car_idle1.ogg");
-	App->audio->LoadFx("FX/car_idle2.ogg");
-	App->audio->LoadFx("FX/car_back1.ogg");
-	App->audio->LoadFx("FX/car_back2.ogg");
-	App->audio->LoadFx("FX/powerup.ogg");
-	App->audio->LoadFx("FX/jump.ogg");
-	App->audio->LoadFx("FX/boost.ogg");
-	App->audio->LoadFx("FX/tick.ogg");
-	App->audio->LoadFx("FX/go.ogg");
-	App->audio->LoadFx("FX/whistle.ogg");
-	App->audio->LoadFx("FX/goal.ogg");
+	App->audio->LoadFx("FX/car2.wav");
+	App->audio->LoadFx("FX/car3.wav");
+	App->audio->LoadFx("FX/car_idle1.wav");
+	App->audio->LoadFx("FX/car_idle2.wav");
+	App->audio->LoadFx("FX/car_back1.wav");
+	App->audio->LoadFx("FX/car_back2.wav");
+	App->audio->LoadFx("FX/powerup.wav");
+	App->audio->LoadFx("FX/jump.wav");
+	App->audio->LoadFx("FX/boost.wav");
+	App->audio->LoadFx("FX/tick.wav");
+	App->audio->LoadFx("FX/go.wav");
+	App->audio->LoadFx("FX/whistle.wav");
+	App->audio->LoadFx("FX/goal.wav");
 
 	player1 = new ModulePlayer(App, true);
 	player2 = new ModulePlayer(App, true);
@@ -68,7 +68,7 @@ bool ModuleSceneIntro::Start()
 	pb_ball->GetTransform(&ball.transform);
 	pb_ball->SetPos(0, 2, 0);
 
-	time_left.Start();
+	game.Start();
 	endGame = false;
 	start = true;
 
@@ -124,7 +124,8 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 	if (!endGame) {
-		time_remaining = time_left.Read();
+		time_remaining = game.Read();
+		LOG("%i", time_remaining);
 		if (time_remaining >= interval && time_remaining != 0)
 		{
 			p2List_item<Cylinder*>* item = time_list.getFirst();
@@ -251,18 +252,19 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					start = true;
 				}
 
-				p2List_item<Cylinder*>* item = cylinders_list1.getFirst();
-				for (int i = 0; i < cylinders_list1.count() && item->next != nullptr; item = item->next) {
+				p2List_item<Cylinder*>* item = cylinders_list1.getLast();
+				for (int i = cylinders_list1.count() - 1; i >= 0 && item->prev != nullptr; item = item->prev) {
 					if (item->data->color.IsWhite())
 					{
 						item->data->color = Green;
 						timer.Start();
 						break;
 					}
-					else if(item->next->next == nullptr)
+					else if(item->prev->prev == nullptr)
 					{
 						App->audio->PlayFx(WHISTLE);
-						item->next->data->color = Green;
+						App->audio->PlayFx(GOAL);
+						item->prev->data->color = Green;
 						endGame = true;
 						time_left.Start();
 					}
@@ -290,6 +292,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 					}
 					else if (item->next->next == nullptr)
 					{
+						App->audio->PlayFx(WHISTLE);
 						App->audio->PlayFx(GOAL);
 						item->data->color = Green;
 						endGame = true;
@@ -328,7 +331,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 
 
 void ModuleSceneIntro::resetLevel() {
-	if (time_left.Read() < 5000) {
+	if (time_left.Read() < 8000) {
 		for (p2List_item<Primitive*>* item = map.getFirst(); item != nullptr; item = item->next) {
 			if(score1 > score2)
 				item->data->color = Orange;
@@ -366,6 +369,7 @@ void ModuleSceneIntro::resetLevel() {
 		interval = counter;
 		RestartPositions();
 		time_left.Start();
+		game.Start();
 		endGame = false;
 		start = true;
 	}

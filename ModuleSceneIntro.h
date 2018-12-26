@@ -72,7 +72,7 @@ public:
 
 	Timer timer;
 	Timer time_left;
-	Timer delay;
+	Timer game;
 	Uint32 time = 0;
 	Uint32 time_remaining;
 	Uint32 time_spend = 0;
